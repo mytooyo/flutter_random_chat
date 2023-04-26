@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-class AppTheme  {
-
+class AppTheme {
   static const Color primary = Color(0xFFFFA000);
   static const Color primaryLight = Color(0xFFFFD149);
   static const Color primaryDark = Color(0xFFC67100);
@@ -29,184 +27,166 @@ class AppTheme  {
   static const Color lowAlpha = Color(0x6642A5F5);
   static const Color attension = Color(0xFF9E1212);
 
-
   // Font
   static const String fontName = 'Nunito';
-
 
   static ThemeData lightTheme = ThemeData.light().copyWith(
     brightness: Brightness.light,
     textTheme: _lightTextTheme,
-    backgroundColor: white,
     primaryColor: primary,
-    accentColor: Colors.blueAccent,
-    scaffoldBackgroundColor: Color(0xFFEFEFF2),
-    bottomAppBarColor: white,
+    scaffoldBackgroundColor: const Color(0xFFEFEFF2),
     cardColor: white,
     focusColor: primary,
     splashColor: Colors.white24,
-    buttonColor: primary,
     primaryTextTheme: _lightTextTheme,
-    accentTextTheme: _lightTextTheme,
     dividerColor: whiteGray,
-    cursorColor: darkGray,
     cardTheme: CardTheme(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0)
-      )
-    ),
-    iconTheme: IconThemeData(
-      color: darkGray
-    )
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0))),
+    iconTheme: const IconThemeData(color: darkGray),
+    bottomAppBarTheme: const BottomAppBarTheme(color: white),
+    colorScheme:
+        ColorScheme.fromSwatch().copyWith(secondary: Colors.blueAccent),
   );
 
   static ThemeData darkTheme = ThemeData.dark().copyWith(
     brightness: Brightness.dark,
     textTheme: _darkTextTheme,
-    backgroundColor: black,
     primaryColor: primary,
-    accentColor: Colors.blueAccent,
     scaffoldBackgroundColor: black,
-    bottomAppBarColor: bottomBar,
     cardColor: blackGray,
     focusColor: primary,
     splashColor: Colors.white24,
-    buttonColor: primary,
     primaryTextTheme: _darkTextTheme,
-    accentTextTheme: _darkTextTheme,
     dividerColor: darkGray,
-    cursorColor: white,
     cardTheme: CardTheme(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0)
-      )
-    ),
-    iconTheme: IconThemeData(
-      color: lightGray
-    )
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0))),
+    iconTheme: const IconThemeData(color: lightGray),
+    bottomAppBarTheme: const BottomAppBarTheme(color: bottomBar),
+    colorScheme:
+        ColorScheme.fromSwatch().copyWith(secondary: Colors.blueAccent),
   );
 
-  static TextTheme _lightTextTheme = TextTheme(
-    headline1: _headline1.merge(blackStyle),
-    headline2: _headline2.merge(blackStyle),
-    headline3: _headline3.merge(blackStyle),
-    headline4: _headline4.merge(blackGrayStyle),
-    headline5: _headline5.merge(blackGrayStyle),
-    headline6: _headline6.merge(blackGrayStyle),
-    subtitle1: _subtitle1.merge(blackGrayStyle),
-    subtitle2: _subtitle2.merge(blackGrayStyle),
-    bodyText1: _body1.merge(darkGrayStyle),
-    bodyText2: _body2.merge(grayStyle),
-    caption: _caption.merge(grayStyle),
-    button: _button.merge(grayStyle),
-    overline: _overline.merge(lightGrayStyle)
-  );
+  static final TextTheme _lightTextTheme = TextTheme(
+      displayLarge: _headline1.merge(blackStyle),
+      displayMedium: _headline2.merge(blackStyle),
+      displaySmall: _headline3.merge(blackStyle),
+      headlineMedium: _headline4.merge(blackGrayStyle),
+      headlineSmall: _headline5.merge(blackGrayStyle),
+      titleLarge: _headline6.merge(blackGrayStyle),
+      titleMedium: _subtitle1.merge(blackGrayStyle),
+      titleSmall: _subtitle2.merge(blackGrayStyle),
+      bodyLarge: _body1.merge(darkGrayStyle),
+      bodyMedium: _body2.merge(grayStyle),
+      bodySmall: _caption.merge(grayStyle),
+      labelLarge: _button.merge(grayStyle),
+      labelSmall: _overline.merge(lightGrayStyle));
 
-  static TextTheme _darkTextTheme = TextTheme(
-    headline1: _headline1.merge(whiteStyle),
-    headline2: _headline2.merge(whiteStyle),
-    headline3: _headline3.merge(whiteStyle),
-    headline4: _headline4.merge(whiteStyle),
-    headline5: _headline5.merge(whiteStyle),
-    headline6: _headline6.merge(whiteStyle),
-    subtitle1: _subtitle1.merge(whiteStyle),
-    subtitle2: _subtitle2.merge(whiteStyle),
-    bodyText1: _body1.merge(whiteStyle),
-    bodyText2: _body2.merge(whiteGrayStyle),
-    caption: _caption.merge(lightGrayStyle),
-    button: _button.merge(whiteStyle),
-    overline: _overline.merge(grayStyle)
-  );
+  static final TextTheme _darkTextTheme = TextTheme(
+      displayLarge: _headline1.merge(whiteStyle),
+      displayMedium: _headline2.merge(whiteStyle),
+      displaySmall: _headline3.merge(whiteStyle),
+      headlineMedium: _headline4.merge(whiteStyle),
+      headlineSmall: _headline5.merge(whiteStyle),
+      titleLarge: _headline6.merge(whiteStyle),
+      titleMedium: _subtitle1.merge(whiteStyle),
+      titleSmall: _subtitle2.merge(whiteStyle),
+      bodyLarge: _body1.merge(whiteStyle),
+      bodyMedium: _body2.merge(whiteGrayStyle),
+      bodySmall: _caption.merge(lightGrayStyle),
+      labelLarge: _button.merge(whiteStyle),
+      labelSmall: _overline.merge(grayStyle));
 
   // *****************************************************
   // * Font and Font size
-  // ***************************************************** 
+  // *****************************************************
 
-  static const TextStyle _headline1 = const TextStyle(
+  static const TextStyle _headline1 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w300,
     fontSize: 96,
     letterSpacing: -1.5,
   );
 
-  static const TextStyle _headline2 = const TextStyle(
+  static const TextStyle _headline2 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w300,
     fontSize: 60,
     letterSpacing: -0.5,
   );
-  
-  static const TextStyle _headline3 = const TextStyle(
+
+  static const TextStyle _headline3 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 48,
     letterSpacing: 0,
   );
 
-  static const TextStyle _headline4 = const TextStyle(
+  static const TextStyle _headline4 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 34,
     letterSpacing: 0.25,
   );
 
-  static const TextStyle _headline5 = const TextStyle(
+  static const TextStyle _headline5 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 24,
     letterSpacing: 0,
   );
 
-  static const TextStyle _headline6 = const TextStyle(
+  static const TextStyle _headline6 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w600,
     fontSize: 20,
     letterSpacing: 0.15,
   );
 
-  static const TextStyle _subtitle1 = const TextStyle(
+  static const TextStyle _subtitle1 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 16,
     letterSpacing: 0.15,
   );
 
-  static const TextStyle _subtitle2 = const TextStyle(
+  static const TextStyle _subtitle2 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w600,
     fontSize: 14,
     letterSpacing: 0.1,
   );
 
-  static const TextStyle _body1 = const TextStyle(
+  static const TextStyle _body1 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 16,
     letterSpacing: 0.5,
   );
 
-  static const TextStyle _body2 = const TextStyle(
+  static const TextStyle _body2 = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 14,
     letterSpacing: 0.25,
   );
 
-  static const TextStyle _button = const TextStyle(
+  static const TextStyle _button = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w600,
     fontSize: 14,
     letterSpacing: 1.25,
   );
 
-  static const TextStyle _caption = const TextStyle(
+  static const TextStyle _caption = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 12,
     letterSpacing: 0.4,
   );
 
-  static const TextStyle _overline = const TextStyle(
+  static const TextStyle _overline = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 10,
@@ -215,64 +195,41 @@ class AppTheme  {
 
   // *****************************************************
   // * Font Weight
-  // ***************************************************** 
-  static const TextStyle normal = const TextStyle(
+  // *****************************************************
+  static const TextStyle normal = TextStyle(
     fontWeight: FontWeight.w400,
   );
 
-  static const TextStyle medium = const TextStyle(
+  static const TextStyle medium = TextStyle(
     fontWeight: FontWeight.w600,
   );
 
-  static const TextStyle bold = const TextStyle(
+  static const TextStyle bold = TextStyle(
     fontWeight: FontWeight.w700,
   );
 
   // *****************************************************
   // * Text Colot Style
-  // ***************************************************** 
-  static const TextStyle whiteStyle = const TextStyle(
-    color: white
-  );
+  // *****************************************************
+  static const TextStyle whiteStyle = TextStyle(color: white);
 
-  static const TextStyle whiteGrayStyle = const TextStyle(
-    color: whiteGray
-  );
+  static const TextStyle whiteGrayStyle = TextStyle(color: whiteGray);
 
-  static const TextStyle lightGrayStyle = const TextStyle(
-    color: lightGray
-  );
+  static const TextStyle lightGrayStyle = TextStyle(color: lightGray);
 
-  static const TextStyle grayStyle = const TextStyle(
-    color: gray
-  );
+  static const TextStyle grayStyle = TextStyle(color: gray);
 
-  static const TextStyle darkGrayStyle = const TextStyle(
-    color: darkGray
-  );
+  static const TextStyle darkGrayStyle = TextStyle(color: darkGray);
 
-  static const TextStyle blackGrayStyle = const TextStyle(
-    color: blackGray
-  );
+  static const TextStyle blackGrayStyle = TextStyle(color: blackGray);
 
-  static const TextStyle blackStyle = const TextStyle(
-    color: black
-  );
+  static const TextStyle blackStyle = TextStyle(color: black);
 
-  static const TextStyle primaryStyle = const TextStyle(
-    color: primary
-  );
+  static const TextStyle primaryStyle = TextStyle(color: primary);
 
-  static const TextStyle primaryLightStyle = const TextStyle(
-    color: primaryLight
-  );
+  static const TextStyle primaryLightStyle = TextStyle(color: primaryLight);
 
-  static const TextStyle primaryDarkStyle = const TextStyle(
-    color: primaryDark
-  );
+  static const TextStyle primaryDarkStyle = TextStyle(color: primaryDark);
 
-  static const TextStyle attensionStyle = const TextStyle(
-    color: attension
-  );
-
+  static const TextStyle attensionStyle = TextStyle(color: attension);
 }

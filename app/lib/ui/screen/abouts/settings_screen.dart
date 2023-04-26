@@ -1,30 +1,27 @@
 import 'package:app/firestore/users_firestore.dart';
 import 'package:app/main.dart';
 import 'package:app/ui/route/route.dart';
+import 'package:app/ui/theme/app_theme_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:app/ui/theme/app_theme_data.dart';
-
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  _SettingsScreen createState() => _SettingsScreen();
-
+  State<SettingsScreen> createState() => _SettingsScreen();
 }
 
 class _SettingsScreen extends State<SettingsScreen> {
-
   bool _notification = false;
 
-  List<SettingItem> _list;
+  late List<SettingItem> _list;
 
-  List<SettingItem> _services;
+  late List<SettingItem> _services;
 
   @override
   void initState() {
-
-    _notification = self.notification;
+    _notification = self!.notification;
 
     _list = [
       // SettingItem(
@@ -39,29 +36,27 @@ class _SettingsScreen extends State<SettingsScreen> {
         callback: () {},
         switchValue: _notification,
         switchCallback: (newValue) {
-          setState(() {
-            _notification = newValue;
-            UsersFirestore().updateNotification(newValue);
-          });
-        }
+          setState(
+            () {
+              _notification = newValue;
+              UsersFirestore().updateNotification(newValue);
+            },
+          );
+        },
       ),
     ];
 
     _services = [
       SettingItem(
-        title: 'Terms of Service',
-        type: SettingItemType.next,
-        callback: () {}
-      ),
+          title: 'Terms of Service',
+          type: SettingItemType.next,
+          callback: () {}),
       SettingItem(
-        title: 'Privacy Policy',
-        type: SettingItemType.next,
-        callback: () {}
-      ),
+          title: 'Privacy Policy', type: SettingItemType.next, callback: () {}),
       SettingItem(
         title: 'Open Source Software',
         type: SettingItemType.next,
-        callback: () {}
+        callback: () {},
       ),
     ];
 
@@ -72,7 +67,7 @@ class _SettingsScreen extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: null,
@@ -80,7 +75,7 @@ class _SettingsScreen extends State<SettingsScreen> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.close,
             ),
             color: AppTheme.primaryLight,
@@ -93,9 +88,9 @@ class _SettingsScreen extends State<SettingsScreen> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             _builder(_list),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             _builder(_services),
             Expanded(child: Container()),
             _item(
@@ -105,13 +100,14 @@ class _SettingsScreen extends State<SettingsScreen> {
                 type: SettingItemType.none,
                 callback: () {
                   auth.signout();
-                  Navigator.of(context).pushNamedAndRemoveUntil(RouteName.start, (route) => false);
-                }
-              )
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      RouteName.start, (route) => false);
+                },
+              ),
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
           ],
-        )
+        ),
       ),
     );
   }
@@ -121,8 +117,8 @@ class _SettingsScreen extends State<SettingsScreen> {
       shrinkWrap: true,
       itemBuilder: (_, index) {
         return _item(list[index]);
-      }, 
-      itemCount: list.length
+      },
+      itemCount: list.length,
     );
   }
 
@@ -134,10 +130,10 @@ class _SettingsScreen extends State<SettingsScreen> {
         onTap: () {
           item.callback();
         },
-        child: Container(
+        child: SizedBox(
           height: 60,
           child: Padding(
-            padding: EdgeInsets.only(left: 24, right: 24),
+            padding: const EdgeInsets.only(left: 24, right: 24),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
@@ -145,35 +141,41 @@ class _SettingsScreen extends State<SettingsScreen> {
               children: <Widget>[
                 Text(
                   item.title,
-                  style: Theme.of(context).textTheme.bodyText1.merge(item.style),
+                  style:
+                      Theme.of(context).textTheme.bodyLarge?.merge(item.style),
                 ),
                 Expanded(child: Container()),
                 item.detail(context),
               ],
-            )
-          )
-        )
-      )
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
 
-enum SettingItemType {
-  text, next, none, uiswitch
-}
+enum SettingItemType { text, next, none, uiswitch }
 
 class SettingItem {
-
   final String title;
   final TextStyle style;
   final SettingItemType type;
   final Function callback;
 
-  String detailText;
-  bool switchValue;
-  Function switchCallback;
+  String? detailText;
+  bool? switchValue;
+  Function? switchCallback;
 
-  SettingItem({this.title, this.style = AppTheme.medium, this.type, this.callback, this.detailText, this.switchValue, this.switchCallback});
+  SettingItem({
+    required this.title,
+    this.style = AppTheme.medium,
+    required this.type,
+    required this.callback,
+    this.detailText,
+    this.switchValue,
+    this.switchCallback,
+  });
 
   Widget detail(BuildContext context) {
     switch (type) {
@@ -183,9 +185,9 @@ class SettingItem {
         return Material(
           color: Colors.transparent,
           child: Text(
-            detailText,
-            style: Theme.of(context).textTheme.bodyText1,
-          )
+            detailText ?? '',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         );
       case SettingItemType.next:
         return Icon(
@@ -199,7 +201,7 @@ class SettingItem {
           activeColor: AppTheme.primary,
           onChanged: (newValue) {
             switchValue = newValue;
-            switchCallback(newValue);
+            switchCallback?.call(newValue);
           },
         );
     }

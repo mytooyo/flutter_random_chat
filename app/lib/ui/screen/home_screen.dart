@@ -1,39 +1,36 @@
-import 'dart:async';
-
 import 'package:app/bloc/self_user_available_bloc.dart';
 import 'package:app/firestore/users_firestore.dart';
 import 'package:app/main.dart';
 import 'package:app/ui/route/route.dart';
 import 'package:app/ui/screen/contents/no_available_card.dart';
 import 'package:app/ui/utilities/app_background.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 import 'components/home_card_component.dart';
 import 'components/home_profile_component.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  _HomeScreen createState() => _HomeScreen();
-
+  State<HomeScreen> createState() => _HomeScreen();
 }
 
 class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
-
-  TextEditingController _textController;
-  PanelController _panelController  = PanelController();
+  late TextEditingController _textController;
+  final PanelController _panelController = PanelController();
   bool _panelOpened = false;
   double _panelOffset = 0.0;
 
-  HomeCardComponent _compornents;
-  HomeProfileComponent _profileComponent;
+  late HomeCardComponent _compornents;
+  late HomeProfileComponent _profileComponent;
 
-  SelfUserBloc _bloc;
+  SelfUserBloc? _bloc;
 
   // Firebase Messaging
-  
+
   @override
   void initState() {
     _textController = TextEditingController(text: self?.profile ?? '');
@@ -45,7 +42,6 @@ class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-
     // アプリがインアクティブ状態となった場合
     if (state == AppLifecycleState.paused) {
       UsersFirestore().activate(false);
@@ -66,61 +62,55 @@ class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-
     _compornents = HomeCardComponent(context: context);
     _profileComponent = HomeProfileComponent(
-      context: context, 
-      textController: _textController,
-      panelOpened: _panelOpened,
-      panelOffset: _panelOffset
-    );
+        context: context,
+        textController: _textController,
+        panelOpened: _panelOpened,
+        panelOffset: _panelOffset);
 
     auth.checkSignin(context);
 
     if (_bloc == null) {
       _bloc = Provider.of<SelfUserBloc>(context);
-      _bloc.load();
+      _bloc!.load();
     }
-    
-    return StreamBuilder(
-      stream: _bloc.stream,
-      initialData: self,
-      builder: (_, snapshot){
-        if (self.available) {
-          return _standard();
-        }
-        // 利用停止中のアカウントの場合
-        return _noAvailable();
-      }
-    );
 
+    return StreamBuilder(
+        stream: _bloc!.stream,
+        initialData: self,
+        builder: (_, snapshot) {
+          if (self?.available ?? false) {
+            return _standard();
+          }
+          // 利用停止中のアカウントの場合
+          return _noAvailable();
+        });
   }
 
   Widget _standard() {
-    double bottom = MediaQuery.of(context).padding.bottom > 0 
-      ? MediaQuery.of(context).padding.bottom + 8
-      : 24;
+    double bottom = MediaQuery.of(context).padding.bottom > 0
+        ? MediaQuery.of(context).padding.bottom + 8
+        : 24;
 
     return Stack(
       children: <Widget>[
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        AppBackgroundPattern(),
+        const AppBackgroundPattern(),
         Scaffold(
           backgroundColor: Colors.transparent,
-          body: SafeArea(
-            child: _builder()
-          ),
+          body: SafeArea(child: _builder()),
         ),
         SlidingUpPanel(
           controller: _panelController,
           panel: _profileComponent.card(),
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(12.0),
             topRight: Radius.circular(12.0),
           ),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.transparent,
               spreadRadius: 1.0,
@@ -157,7 +147,7 @@ class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           Opacity(
             opacity: 0.8,
             child: Container(
@@ -165,21 +155,20 @@ class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
               height: 48,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(
-                    MediaQuery.platformBrightnessOf(context) == Brightness.dark
-                    ? 'assets/images/title_logo_dark.png'
-                    : 'assets/images/title_logo_light.png'
-                  ),
+                  image: AssetImage(MediaQuery.platformBrightnessOf(context) ==
+                          Brightness.dark
+                      ? 'assets/images/title_logo_dark.png'
+                      : 'assets/images/title_logo_light.png'),
                   fit: BoxFit.contain,
                 ),
-              )
-            )
+              ),
+            ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           _compornents.activitiesCard(),
           _compornents.menuTiles(),
         ],
-      )
+      ),
     );
   }
 
@@ -233,7 +222,7 @@ class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        AppBackgroundPattern(),
+        const AppBackgroundPattern(),
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
@@ -241,37 +230,31 @@ class _HomeScreen extends State<HomeScreen> with WidgetsBindingObserver {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Opacity(
-                    opacity: 0.8,
-                    child: Container(
-                      width: double.infinity,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                            MediaQuery.platformBrightnessOf(context) == Brightness.dark
-                            ? 'assets/images/title_logo_dark.png'
-                            : 'assets/images/title_logo_light.png'
-                          ),
-                          fit: BoxFit.contain,
-                        ),
-                      )
-                    )
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 80, left: 40, right: 40),
-                    child: NoAvailableCard()
-                  ),
-                  
+                      opacity: 0.8,
+                      child: Container(
+                          width: double.infinity,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  MediaQuery.platformBrightnessOf(context) ==
+                                          Brightness.dark
+                                      ? 'assets/images/title_logo_dark.png'
+                                      : 'assets/images/title_logo_light.png'),
+                              fit: BoxFit.contain,
+                            ),
+                          ))),
+                  const Padding(
+                      padding: EdgeInsets.only(top: 80, left: 40, right: 40),
+                      child: NoAvailableCard()),
                 ],
-              )
-            )
+              ),
+            ),
           ),
         )
-      ]
+      ],
     );
   }
-  
 }
-

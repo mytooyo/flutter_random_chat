@@ -1,44 +1,46 @@
-
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app/firestore/base_firestore.dart';
 import 'package:app/firestore/messages_firestore.dart';
 import 'package:app/firestore/users_firestore.dart';
 import 'package:app/main.dart';
 import 'package:app/model/firestore_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
+import 'package:uuid/uuid.dart';
 
 class ConversationFirestore extends BaseFirestore {
+  static const String prefix = 'conversation';
+  static const String replyPrefix = 'replys';
 
-  static final String prefix = 'conversation';
-  static final String replyPrefix = 'replys';
+  Future<Conversation> register(
+    Message message, {
+    String? reply,
+    File? file,
+    String? id,
+  }) async {
+    String uid = auth.user.uid;
 
-  Future<Conversation> register(Message message, {String reply, File file, String id}) async {
-
-    String uid = (await auth.authUser()).uid;
-
-    var id = Uuid().v4() + DateTime.now().millisecondsSinceEpoch.toString();
+    var id =
+        const Uuid().v4() + DateTime.now().millisecondsSinceEpoch.toString();
     var conv = Conversation(
-      id: id,
-      message: message,
-      users: [uid, message.from.id],
-      timestamp: DateTime.now().millisecondsSinceEpoch,
-      unreadMessagener: 0,
-      unreadReplyer: 0
-    );
+        id: id,
+        message: message,
+        users: [uid, message.from.id],
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+        unreadMessagener: 0,
+        unreadReplyer: 0);
     conv.to = message.from;
 
-    await instance.collection(prefix).document(id).setData(conv.toJson);
+    await instance.collection(prefix).doc(id).set(conv.toJson);
 
     // メッセージの送信の場合
     if (reply != null) {
       await sendMessage(conv, reply);
     }
     // 画像送信の場合
-    else {
+    else if (file != null) {
       await sendImage(conv, file, id: id);
     }
 
@@ -46,72 +48,79 @@ class ConversationFirestore extends BaseFirestore {
     await MessagesFirestore().resetUsers(message);
 
     return conv;
-
   }
 
-
   Future<void> sendMessage(Conversation conv, String reply) async {
-    String uid = (await auth.authUser()).uid;
-    var id = Uuid().v4() + uid;
+    String uid = auth.user.uid;
+    var id = const Uuid().v4() + uid;
 
     var to = conv.users.where((id) => uid != id).first;
-    var _reply = Reply(
-      id: id,
-      message: reply,
-      img: null,
-      from: self,
-      timestamp: DateTime.now().millisecondsSinceEpoch,
-      tmp: false,
-      read: false,
-      to: to
-    );
+    var reply0 = Reply(
+        id: id,
+        message: reply,
+        img: null,
+        from: self!,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+        tmp: false,
+        read: false,
+        to: to);
 
-    await instance.collection(prefix).document(conv.id)
-      .collection(replyPrefix).document(id).setData(_reply.toJson);
+    await instance
+        .collection(prefix)
+        .doc(conv.id)
+        .collection(replyPrefix)
+        .doc(id)
+        .set(reply0.toJson);
 
     // 未読件数はそこまで大事なわけではないため、
     // 非同期で処理させることでUXを向上させたい
     updateUnread(conv, uid);
   }
 
-  Future<void> sendImage(Conversation conv, File file, {String id}) async {
-    
+  Future<void> sendImage(Conversation conv, File file, {String? id}) async {
     // ここで払い出したIDはそのままCloudFunctionで引き継いで利用
-    String uid = (await auth.authUser()).uid;
-    var repId = id ?? Uuid().v4() + uid;
+    final newId = id ?? const Uuid().v4();
+    String uid = auth.user.uid;
+    var repId = newId + uid;
 
     var to = conv.users.where((id) => uid != id).first;
-    var _reply = Reply(
+    var reply = Reply(
       id: repId,
       message: null,
       img: null,
-      from: self,
+      from: self!,
       timestamp: DateTime.now().millisecondsSinceEpoch,
       tmp: true,
       read: false,
-      to: to
+      to: to,
     );
 
-    await instance.collection(prefix).document(conv.id)
-      .collection(replyPrefix).document(id).setData(_reply.toJson);
-
+    await instance
+        .collection(prefix)
+        .doc(conv.id)
+        .collection(replyPrefix)
+        .doc(newId)
+        .set(reply.toJson);
 
     var ext = path.extension(file.path);
     var contentType = ext.replaceAll('.', '');
 
-    var filename = id + ext;
-    final StorageReference ref = FirebaseStorage().ref().child(prefix).child(conv.id).child(filename);
-    final StorageUploadTask _ = ref.putFile(
+    var filename = newId + ext;
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child(prefix)
+        .child(conv.id)
+        .child(filename);
+    final _ = ref.putFile(
       file,
-      StorageMetadata(
+      SettableMetadata(
         contentType: "image/$contentType",
-      )
+      ),
     );
 
     // 未読件数はそこまで大事なわけではないため、
     // 非同期で処理させることでUXを向上させたい
     updateUnread(conv, uid);
-
   }
 
   Future<void> updateUnread(Conversation conv, String uid) async {
@@ -122,18 +131,20 @@ class ConversationFirestore extends BaseFirestore {
       key = 'unreadReplyer';
     }
 
-    await instance.collection(prefix).document(conv.id).updateData({
-      key: FieldValue.increment(1)
-    });
+    await instance
+        .collection(prefix)
+        .doc(conv.id)
+        .update({key: FieldValue.increment(1)});
 
     // ユーザ毎の未読件数を設定
-    await instance.collection(UsersFirestore.prefix).document(conv.to.id).updateData({
-      'unread': FieldValue.increment(1)
-    });
+    await instance
+        .collection(UsersFirestore.prefix)
+        .doc(conv.to.id)
+        .update({'unread': FieldValue.increment(1)});
   }
 
   Future<void> updateRead(Conversation conv) async {
-    String uid = (await auth.authUser()).uid;
+    String uid = auth.user.uid;
     // 自分がメッセージ投稿者であった場合はreplyerに対して未読を登録
     var key = 'unreadMessagener';
     var decrement = conv.unreadMessagener;
@@ -142,14 +153,12 @@ class ConversationFirestore extends BaseFirestore {
       decrement = conv.unreadReplyer;
     }
     // Conversationに未読件数を0に更新
-    await instance.collection(prefix).document(conv.id).updateData({
-      key: 0
-    });
+    await instance.collection(prefix).doc(conv.id).update({key: 0});
 
     // ユーザ毎の未読件数をConversation分デクリメント
-    await instance.collection(UsersFirestore.prefix).document(uid).updateData({
-      'unread': FieldValue.increment(-decrement)
-    });
+    await instance
+        .collection(UsersFirestore.prefix)
+        .doc(uid)
+        .update({'unread': FieldValue.increment(-decrement)});
   }
-
 }

@@ -7,72 +7,69 @@ import 'package:app/ui/utilities/app_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class MessagesScreen extends StatefulWidget {
-
   final ScrollController scrollController;
 
-  MessagesScreen({Key key, this.scrollController}) : super(key: key);
+  const MessagesScreen({
+    super.key,
+    required this.scrollController,
+  });
 
   @override
-  _MessagesScreen createState() => _MessagesScreen();
-
+  State<MessagesScreen> createState() => _MessagesScreen();
 }
-class _MessagesScreen extends State<MessagesScreen> {
 
+class _MessagesScreen extends State<MessagesScreen> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  ListModel<Message> _list;
-  MessagesScreenBloc _bloc;
-  
+  late ListModel<Message> _list;
+  late MessagesScreenBloc _bloc;
+
   @override
   void initState() {
-
-    List<Message> _initial = [];
+    List<Message> initial = [];
     _list = ListModel<Message>(
       listKey: _listKey,
-      initialItems: _initial,
+      initialItems: initial,
       removedItemBuilder: _buildRemovedItem,
     );
-    
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    
     _bloc = Provider.of<MessagesScreenBloc>(context);
     _bloc.load();
 
     // return Container();
     return RefreshIndicator(
+      onRefresh: _refresh,
       child: StreamBuilder(
         stream: _bloc.stream,
-        initialData: [],
+        initialData: const [],
         builder: (_, snapshot) {
-          
           if (snapshot.data is List<Message>) {
-            (snapshot.data as List<Message>).forEach((element) { _insert(element); });
+            for (var element in (snapshot.data as List<Message>)) {
+              _insert(element);
+            }
           }
 
           return AnimatedList(
-            key: _listKey,
-            controller: widget.scrollController,
-            shrinkWrap: true,
-            padding: EdgeInsets.only(bottom: 24, top: 16),
-            physics: AlwaysScrollableScrollPhysics(),
-            initialItemCount: _list.length,
-            itemBuilder: _buildItem
-          );
+              key: _listKey,
+              controller: widget.scrollController,
+              shrinkWrap: true,
+              padding: const EdgeInsets.only(bottom: 24, top: 16),
+              physics: const AlwaysScrollableScrollPhysics(),
+              initialItemCount: _list.length,
+              itemBuilder: _buildItem);
         },
       ),
-      onRefresh: _refresh,
     );
-    
   }
 
   // Used to build list items that haven't been removed.
-  Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
-
+  Widget _buildItem(
+      BuildContext context, int index, Animation<double> animation) {
     return MessageItemCard(
       context: context,
       message: _list[index],
@@ -89,7 +86,8 @@ class _MessagesScreen extends State<MessagesScreen> {
   // concerned). The widget will be used by the
   // [AnimatedListState.removeItem] method's
   // [AnimatedListRemovedItemBuilder] parameter.
-  Widget _buildRemovedItem(Message item, BuildContext context, Animation<double> animation) {
+  Widget _buildRemovedItem(
+      Message item, BuildContext context, Animation<double> animation) {
     return MessageItemCard(
       context: context,
       message: item,
@@ -105,10 +103,10 @@ class _MessagesScreen extends State<MessagesScreen> {
     Navigator.of(context).pushNamed(
       RouteName.messageDetail,
       arguments: MessageDetailScreenArgument(
-        message: _list[index], 
+        message: _list[index],
         type: MessageDetailType.detail,
-        callback: _sentReply
-      )
+        callback: _sentReply,
+      ),
     );
   }
 
@@ -127,5 +125,4 @@ class _MessagesScreen extends State<MessagesScreen> {
   void _remove(int index) {
     _list.removeAt(index);
   }
-
 }

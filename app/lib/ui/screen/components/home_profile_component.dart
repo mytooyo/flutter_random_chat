@@ -1,26 +1,30 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app/main.dart';
 import 'package:app/ui/route/route.dart';
 import 'package:app/ui/screen/user_profile_screen.dart';
 import 'package:app/ui/theme/app_theme_data.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class HomeProfileComponent {
-
   final BuildContext context;
   final TextEditingController textController;
   final bool panelOpened;
   final double panelOffset;
 
-  HomeProfileComponent({this.context, this.textController, this.panelOpened, this.panelOffset});
+  HomeProfileComponent({
+    required this.context,
+    required this.textController,
+    required this.panelOpened,
+    required this.panelOffset,
+  });
 
   Widget card() {
     return Card(
       color: Theme.of(context).canvasColor.withOpacity(panelOffset),
       elevation: 0,
       child: Stack(
-        children: _backgroundImage() + [_userMain()]
-      )
+        children: _backgroundImage() + [_userMain()],
+      ),
     );
   }
 
@@ -40,27 +44,29 @@ class HomeProfileComponent {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: OverflowBox(
-                  minWidth: 0.0, 
-                  minHeight: 0.0, 
+                  minWidth: 0.0,
+                  minHeight: 0.0,
                   // maxWidth: double.infinity,
-                  maxHeight: double.infinity, 
-                  child: self.bgImage != null
-                    ? CachedNetworkImage(
-                        imageUrl: self.bgImage,
-                        httpHeaders: {'Authorization': 'Bearer $token'},
-                        fit: BoxFit.cover,
-                        progressIndicatorBuilder: (context, url, downloadProgress) => 
-                          CircularProgressIndicator(value: downloadProgress.progress),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      )
-                      
-                    : Image.asset(
-                        'assets/images/noimage.png',
-                        color: Colors.white,
-                        fit: BoxFit.cover,
-                      ),
-                )
-              )
+                  maxHeight: double.infinity,
+                  child: self?.bgImage != null
+                      ? CachedNetworkImage(
+                          imageUrl: self!.bgImage!,
+                          httpHeaders: {'Authorization': 'Bearer $token'},
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        )
+                      : Image.asset(
+                          'assets/images/noimage.png',
+                          color: Colors.white,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
             ),
             Container(
               width: MediaQuery.of(context).size.width,
@@ -71,8 +77,8 @@ class HomeProfileComponent {
               ),
             ),
           ],
-        )
-      )
+        ),
+      ),
     ];
   }
 
@@ -92,78 +98,79 @@ class HomeProfileComponent {
             children: <Widget>[
               Column(
                 children: <Widget>[
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Container(
                     width: circleSize,
                     height: circleSize,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(circleSize / 2),
-                      color: AppTheme.lightGray
-                    ),
+                        borderRadius: BorderRadius.circular(circleSize / 2),
+                        color: AppTheme.lightGray),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(circleSize / 2),
                       child: OverflowBox(
-                        minWidth: 0.0, 
-                        minHeight: 0.0, 
+                        minWidth: 0.0,
+                        minHeight: 0.0,
                         // maxWidth: double.infinity,
-                        maxHeight: double.infinity, 
+                        maxHeight: double.infinity,
                         child: self?.img == null
-                          ? Image.asset(
-                              'assets/images/person.png', 
-                              color: Colors.white,
-                              fit: BoxFit.cover
-                            )
-                          : CachedNetworkImage(
-                            imageUrl: self?.img,
-                            httpHeaders: {'Authorization': 'Bearer $token'},
-                            fit: BoxFit.cover,
-                            height: circleSize,
-                            width: circleSize,
-                            progressIndicatorBuilder: (context, url, downloadProgress) => 
-                              CircularProgressIndicator(
-                                value: downloadProgress.progress,
+                            ? Image.asset('assets/images/person.png',
+                                color: Colors.white, fit: BoxFit.cover)
+                            : CachedNetworkImage(
+                                imageUrl: self!.img!,
+                                httpHeaders: {'Authorization': 'Bearer $token'},
+                                fit: BoxFit.cover,
+                                height: circleSize,
+                                width: circleSize,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                  value: downloadProgress.progress,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
-                            errorWidget: (context, url, error) => Icon(Icons.error),
-                          ),
-                      )
-                    )
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Padding(
-                    padding: EdgeInsets.only(left: 24, right: 24),
+                    padding: const EdgeInsets.only(left: 24, right: 24),
                     child: Material(
                       color: Colors.transparent,
                       child: Text(
                         self?.name ?? '',
-                        style: Theme.of(context).textTheme.headline6.merge(AppTheme.medium),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.merge(AppTheme.medium),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
-                      )
-                    )
+                      ),
+                    ),
                   ),
                   Opacity(
                     opacity: panelOffset,
                     child: Padding(
-                      padding: EdgeInsets.only(top: 32, bottom: 20),
+                      padding: const EdgeInsets.only(top: 32, bottom: 20),
                       child: Container(
                         height: 1,
                         color: Theme.of(context).dividerColor.withOpacity(0.5),
-                      )
-                    )
-                  )
+                      ),
+                    ),
+                  ),
                 ],
               ),
               panelOpened ? _changeProfile() : Container()
             ],
-          )
+          ),
         ),
         Expanded(
           child: SingleChildScrollView(
             child: _contents(),
-          )
+          ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         SizedBox(height: MediaQuery.of(context).padding.bottom),
       ],
     );
@@ -176,14 +183,10 @@ class HomeProfileComponent {
       child: Container(
         width: 72,
         height: 36,
-        decoration: new BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(
-            color: AppTheme.primary,
-            width: 1.5
-          )
-        ),
+        decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+            border: Border.all(color: AppTheme.primary, width: 1.5)),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -191,22 +194,28 @@ class HomeProfileComponent {
             onTap: () {
               Navigator.of(context).pushNamed(
                 RouteName.userProfile,
-                arguments: UserProfileScreenArgumanet(user: self, editable: true)
+                arguments:
+                    UserProfileScreenArgumanet(user: self, editable: true),
               );
             },
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
             child: Padding(
-              padding: EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
+              padding:
+                  const EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
               child: Center(
                 child: Text(
                   'Change',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText2.merge(AppTheme.primaryStyle).merge(AppTheme.medium),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.merge(AppTheme.primaryStyle)
+                      .merge(AppTheme.medium),
                 ),
-              )
+              ),
             ),
           ),
-        )
+        ),
       ),
     );
   }
@@ -219,24 +228,25 @@ class HomeProfileComponent {
         type: MaterialType.transparency,
         child: TextFormField(
           controller: textController,
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.bodyLarge,
           enabled: false,
           maxLines: null,
           decoration: InputDecoration(
             hintText: '',
-            hintStyle: Theme.of(context).textTheme.bodyText1,
-            contentPadding: EdgeInsets.only(left: 20, right: 20, top: 4, bottom: 12),
+            hintStyle: Theme.of(context).textTheme.bodyLarge,
+            contentPadding:
+                const EdgeInsets.only(left: 20, right: 20, top: 4, bottom: 12),
             fillColor: Colors.transparent,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: Colors.transparent,
                 width: 0.0,
               ),
-            ), 
+            ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: Colors.transparent,
                 width: 0.0,
               ),
@@ -247,9 +257,9 @@ class HomeProfileComponent {
                 width: 2.0,
               ),
               borderRadius: BorderRadius.circular(12),
-            ), 
+            ),
           ),
-        )
+        ),
       ),
     );
   }

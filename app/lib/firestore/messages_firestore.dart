@@ -1,37 +1,35 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app/firestore/base_firestore.dart';
 import 'package:app/main.dart';
 import 'package:app/model/firestore_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
 class MessagesFirestore extends BaseFirestore {
+  static const String prefix = 'messages';
+  static const String postPrefix = 'posted';
+  static const String receivePrefix = 'received';
 
-  static final String prefix = 'messages';
-  static final String postPrefix = 'posted';
-  static final String receivePrefix = 'received';
+  Future<void> post(String message, {File? file}) async {
+    String uid = auth.user.uid;
+    String id = const Uuid().v4() + uid;
 
-  Future<void> post(String message, {File file}) async {
-    
-    String uid = (await auth.authUser()).uid;
-    String id = Uuid().v4() + uid;
-    
     // String img;
-    
-    Message _message = Message(
+
+    Message message0 = Message(
       id: id,
       message: message,
       img: null,
       imgReg: file != null,
       timestamp: DateTime.now().millisecondsSinceEpoch,
       uid: uid,
-      from: self,
+      from: self!,
     );
 
-    await instance.collection(postPrefix).document(id).setData(_message.toJson);
+    await instance.collection(postPrefix).doc(id).set(message0.toJson);
 
     // 画像のアップロードがある場合は非同期で実施
     if (file != null) {
@@ -39,24 +37,25 @@ class MessagesFirestore extends BaseFirestore {
       var contentType = ext.replaceAll('.', '');
 
       var filename = id + ext;
-      final StorageReference ref = FirebaseStorage().ref().child(prefix).child(filename);
-      final StorageUploadTask _ = ref.putFile(
-        file,
-        StorageMetadata(
-          contentType: "image/$contentType",
-        )
-      );
-      
-    }
 
+      final ref = FirebaseStorage.instance.ref().child(prefix).child(filename);
+      final _ = ref.putFile(
+        file,
+        SettableMetadata(
+          contentType: "image/$contentType",
+        ),
+      );
+    }
   }
 
   Future<void> resetUsers(Message message) async {
-    String uid = (await auth.authUser()).uid;
-    await instance.collection('${MessagesFirestore.receivePrefix}/$uid/messages').document(message.id).delete();
-    await instance.collection(MessagesFirestore.receivePrefix).document(uid).updateData({
-      'ids': FieldValue.arrayRemove([message.id]) 
+    String uid = auth.user.uid;
+    await instance
+        .collection('${MessagesFirestore.receivePrefix}/$uid/messages')
+        .doc(message.id)
+        .delete();
+    await instance.collection(MessagesFirestore.receivePrefix).doc(uid).update({
+      'ids': FieldValue.arrayRemove([message.id])
     });
   }
-
 }
