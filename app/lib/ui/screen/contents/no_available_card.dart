@@ -1,71 +1,71 @@
-
 import 'package:app/ui/theme/app_theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class NoAvailableCard extends StatelessWidget {
+  final void Function()? callback;
 
-  final Function callback;
-
-  NoAvailableCard({Key key, this.callback}): super(key: key);
+  const NoAvailableCard({
+    super.key,
+    this.callback,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Padding(
-          padding: EdgeInsets.only(left: 24, right: 24, top: 40, bottom: 60),
+          padding:
+              const EdgeInsets.only(left: 24, right: 24, top: 40, bottom: 60),
           child: Material(
             color: Colors.transparent,
             child: Column(
               children: <Widget>[
-                Icon(
-                  FontAwesomeIcons.exclamationCircle,
-                  color: AppTheme.attension,
-                  size: 60
-                ),
-                SizedBox(height: 24),
-                Text(
-                  'Under regulation',
-                  style: Theme.of(context).textTheme.headline5
-                    .merge(AppTheme.attensionStyle)
-                    .merge(AppTheme.bold)
-                ),
-                SizedBox(height: 24),
+                const Icon(FontAwesomeIcons.exclamationCircle,
+                    color: AppTheme.attension, size: 60),
+                const SizedBox(height: 24),
+                Text('Under regulation',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.merge(AppTheme.attensionStyle)
+                        .merge(AppTheme.bold)),
+                const SizedBox(height: 24),
                 Text(
                   'We have suspended your account for a period of time because more than one person has reported your post.',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Please do not post inappropriate content in the future.',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 Text(
                   'You can use it again\nafter the suspension period.',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-              ] + (callback != null ? _closeButton(context) : []),
-            )
-          )
-        )
-      )
+                ...(callback != null ? _closeButton(context) : []),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   List<Widget> _closeButton(BuildContext context) {
     return [
-      SizedBox(height: 44),
+      const SizedBox(height: 44),
       Padding(
-        padding: EdgeInsets.only(left: 24, right: 24),
+        padding: const EdgeInsets.only(left: 24, right: 24),
         child: Container(
           height: 48,
-          decoration: new BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppTheme.attension,
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
           ),
@@ -74,24 +74,28 @@ class NoAvailableCard extends StatelessWidget {
             child: InkWell(
               splashColor: Colors.white24,
               onTap: () {
-                callback();
+                callback?.call();
               },
-              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(8.0)),
               child: Padding(
-                padding: EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
+                padding:
+                    const EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
                 child: Center(
                   child: Text(
                     'CLOSE',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText1.merge(AppTheme.whiteStyle).merge(AppTheme.medium),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.merge(AppTheme.whiteStyle)
+                        .merge(AppTheme.medium),
                   ),
-                )
+                ),
               ),
             ),
-          )
-        )
-      )
+          ),
+        ),
+      ),
     ];
   }
-
 }

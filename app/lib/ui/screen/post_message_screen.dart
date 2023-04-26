@@ -1,5 +1,5 @@
-
 import 'dart:io';
+
 import 'package:app/firestore/messages_firestore.dart';
 import 'package:app/main.dart';
 import 'package:app/ui/route/route.dart';
@@ -11,19 +11,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:load/load.dart';
 
 class PostMessageScreen extends StatefulWidget {
+  const PostMessageScreen({super.key});
 
   @override
-  _PostMessageScreen createState() => _PostMessageScreen();
-
+  State<PostMessageScreen> createState() => _PostMessageScreen();
 }
 
 class _PostMessageScreen extends State<PostMessageScreen> {
+  final FocusNode _focusNode = FocusNode();
+  late TextEditingController _textController;
 
-
-  FocusNode _focusNode = FocusNode();
-  TextEditingController _textController;
-
-  File _selectedImage;
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -35,14 +33,15 @@ class _PostMessageScreen extends State<PostMessageScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (_focusNode.hasFocus)
+        if (_focusNode.hasFocus) {
           _focusNode.unfocus();
-        else
+        } else {
           _focusNode.requestFocus();
+        }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Post Message'),
+          title: const Text('Post Message'),
           backgroundColor: Colors.transparent,
           centerTitle: true,
           elevation: 0,
@@ -50,7 +49,7 @@ class _PostMessageScreen extends State<PostMessageScreen> {
           automaticallyImplyLeading: false,
           actions: <Widget>[
             IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.close,
               ),
               color: AppTheme.primaryLight,
@@ -60,30 +59,26 @@ class _PostMessageScreen extends State<PostMessageScreen> {
             )
           ],
         ),
-        body: SafeArea(
-          child: _builder()
-        )
-      )
+        body: SafeArea(child: _builder()),
+      ),
     );
-    
   }
 
   Widget _builder() {
     return Column(
-      children: <Widget>[
-        _main(),
-        _keyboardAccessoryWidget()
-      ],
+      children: <Widget>[_main(), _keyboardAccessoryWidget()],
     );
   }
 
   Widget _main() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
+        padding:
+            const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
         child: Card(
           child: Padding(
-            padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+            padding:
+                const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -97,49 +92,50 @@ class _PostMessageScreen extends State<PostMessageScreen> {
                       controller: _textController,
                       autofocus: true,
                       focusNode: _focusNode,
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         hintText: 'Post Meessage...',
-                        hintStyle: Theme.of(context).textTheme.bodyText1.merge(AppTheme.lightGrayStyle),
-                        contentPadding: EdgeInsets.all(8),
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.merge(AppTheme.lightGrayStyle),
+                        contentPadding: const EdgeInsets.all(8),
                         fillColor: Theme.of(context).cardColor,
                         filled: false,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Colors.transparent,
                             width: 0.0,
                           ),
-                        ), 
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: AppTheme.primary.withOpacity(0.4),
                             width: 2.0,
                           ),
                           borderRadius: BorderRadius.circular(4),
-                        ), 
+                        ),
                       ),
                       maxLines: null,
                       minLines: null,
                       keyboardType: TextInputType.multiline,
-                      onTap: () {
-
-                      },
-                      onChanged: (value) {
-
-                      },
-                    )
+                      onTap: () {},
+                      onChanged: (value) {},
+                    ),
                   ),
-                  _selectedImage == null ? Container() : Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: _image()
-                  ),
+                  _selectedImage == null
+                      ? Container()
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: _image(),
+                        ),
                 ],
-              )
-            )
-          )
-        )
-      )
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -147,35 +143,36 @@ class _PostMessageScreen extends State<PostMessageScreen> {
     return Stack(
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
+          padding:
+              const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-              child: Container(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
                 height: 180,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: OverflowBox(
-                    minWidth: 0.0, 
-                    minHeight: 0.0, 
+                    minWidth: 0.0,
+                    minHeight: 0.0,
                     // maxWidth: double.infinity,
-                    maxHeight: double.infinity, 
+                    maxHeight: double.infinity,
                     child: Image.file(
-                      _selectedImage,
+                      _selectedImage!,
                       fit: BoxFit.cover,
-                    )
-                  )
-                )
+                    ),
+                  ),
+                ),
               ),
               onTap: () {
                 Navigator.of(context).pushNamed(
                   RouteName.showImage,
-                  arguments: MessageImageScreenArgument(file: _selectedImage)
+                  arguments: MessageImageScreenArgument(file: _selectedImage!),
                 );
               },
             ),
-          )
+          ),
         ),
         Positioned(
           right: 4,
@@ -189,24 +186,23 @@ class _PostMessageScreen extends State<PostMessageScreen> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: AppTheme.primaryDark
-                ),
-                child: Center(
+                    borderRadius: BorderRadius.circular(20),
+                    color: AppTheme.primaryDark),
+                child: const Center(
                   child: Icon(
                     Icons.close,
                     color: Colors.white,
                     size: 20,
-                  )
-                )
+                  ),
+                ),
               ),
               onTap: () {
                 setState(() {
                   _selectedImage = null;
                 });
               },
-            )
-          )
+            ),
+          ),
         )
       ],
     );
@@ -217,7 +213,7 @@ class _PostMessageScreen extends State<PostMessageScreen> {
       height: 60,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8),
           topRight: Radius.circular(8),
         ),
@@ -231,87 +227,84 @@ class _PostMessageScreen extends State<PostMessageScreen> {
         // ]
       ),
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: 8),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
                   splashColor: AppTheme.primaryLight.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: AppTheme.primary
-                    ),
-                    child: Center(
-                      child: Row(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: AppTheme.primary),
+                      child: Center(
+                          child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
+                        children: const <Widget>[
                           Icon(
                             Icons.image,
                             color: Colors.white,
                             size: 20,
                           ),
                         ],
-                      )
-                    )
-                  ),
+                      ))),
                   onTap: () {
                     getImage();
                   },
-                )
-              )
+                ),
+              ),
             ),
             Expanded(child: Container()),
             Container(
               width: 80,
               height: 40,
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppTheme.primary,
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                border: Border.all(
-                  color: AppTheme.primary,
-                  width: 1.5
-                )
+                borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                border: Border.all(color: AppTheme.primary, width: 1.5),
               ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
                   splashColor: Colors.white24,
                   onTap: () {
-                    
-                    if (_textController.text == null || _textController.text == '') return;
+                    if (_textController.text == '') return;
 
                     _focusNode.unfocus();
                     showAppLoadingWidget();
 
                     _post();
-
                   },
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                   child: Padding(
-                    padding: EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
+                    padding: const EdgeInsets.only(
+                        top: 4, bottom: 4, left: 8, right: 8),
                     child: Center(
                       child: Text(
                         'Send',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyText2.merge(AppTheme.whiteStyle).merge(AppTheme.medium),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.merge(AppTheme.whiteStyle)
+                            .merge(AppTheme.medium),
                       ),
-                    )
+                    ),
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
           ],
         ),
       ),
@@ -319,31 +312,31 @@ class _PostMessageScreen extends State<PostMessageScreen> {
   }
 
   Future getImage() async {
-    File image = await ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 60);
+    final image = await ImagePicker.platform.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 60,
+    );
 
-    if (image == null || image.path == null) return;
+    if (image?.path == null) return;
 
     // RotateはiOSの場合のみ行う
+    File newImage = File(image!.path);
     if (Platform.isIOS) {
-      image = await fixExifRotation(image.path);
+      newImage = await fixExifRotation(image.path);
     }
 
     setState(() {
-      _selectedImage = image;
+      _selectedImage = newImage;
     });
   }
 
   Future<void> _post() async {
-    
     final firestore = MessagesFirestore();
 
     // Firestore and Storageに登録
-    firestore.post(_textController.text, file: _selectedImage).then( (_) {
+    firestore.post(_textController.text, file: _selectedImage!).then((_) {
       hideLoadingDialog();
       Navigator.of(context).pop();
-      
     });
   }
-
 }
-

@@ -4,64 +4,58 @@ import 'package:app/model/firestore_model.dart';
 import 'package:app/ui/route/route.dart';
 import 'package:app/ui/theme/app_theme_data.dart';
 import 'package:app/ui/utilities/app_loader.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:load/load.dart';
-import 'package:flutter/material.dart';
 
-AppAuth auth;
-String token;
-FirebaseUser user;
-User self;
+late AppAuth auth;
+String? token;
+fb.User? user;
+User? self;
 
 bool isDebug = false;
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp
-  ]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   assert(isDebug = true);
-  
+
   auth = AppAuth();
-  user = await auth.authUser();
-  
+  user = auth.authUser();
+
   var initialize = false;
   if (user != null) {
     token = await auth.token();
     UsersFirestore().activate(true);
     self = await UsersFirestore().cache();
-  }
-  else {
+  } else {
     initialize = true;
   }
 
   runApp(
     LoadingProvider(
-      child: MyApp(initialize)
-    )
+      themeData: LoadingThemeData(),
+      child: MyApp(initialize),
+    ),
   );
 }
 
-class MyApp extends StatelessWidget {  
-
+class MyApp extends StatelessWidget {
   final bool initialize;
-  MyApp(this.initialize);
+  const MyApp(this.initialize, {super.key});
 
   @override
   Widget build(BuildContext context) {
-
-    
     // SystemChrome.setSystemUIOverlayStyle(
     //   SystemUiOverlayStyle(
-        // statusBarColor: Colors.transparent,
-        // statusBarIconBrightness: Brightness.light,
-        // statusBarBrightness: Brightness.light,
-        // systemNavigationBarColor: Colors.black,
-        // systemNavigationBarDividerColor: Colors.grey,
-        // systemNavigationBarIconBrightness: Brightness.dark,
+    // statusBarColor: Colors.transparent,
+    // statusBarIconBrightness: Brightness.light,
+    // statusBarBrightness: Brightness.light,
+    // systemNavigationBarColor: Colors.black,
+    // systemNavigationBarDividerColor: Colors.grey,
+    // systemNavigationBarIconBrightness: Brightness.dark,
     //   )
     // );
     return MaterialApp(
@@ -79,19 +73,17 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       initialRoute: initialize ? RouteName.start : RouteName.home,
-      onGenerateRoute: Router.onGenerateRoute,
-
+      onGenerateRoute: CustomRouter.onGenerateRoute,
     );
   }
 }
 
-
 void showAppLoadingWidget() {
   showCustomLoadingWidget(
-    AppLoader(
+    const AppLoader(
       radius: 48,
       dotRadius: 16.0,
     ),
-    tapDismiss: false
+    tapDismiss: false,
   );
 }

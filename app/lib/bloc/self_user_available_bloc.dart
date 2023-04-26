@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app/firestore/users_firestore.dart';
 import 'package:app/main.dart';
 import 'package:app/model/firestore_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SelfUserBloc {
-  
   bool available = false;
   SelfUserBloc() {
     available = self?.available ?? false;
@@ -20,9 +19,11 @@ class SelfUserBloc {
 
   void load() async {
     if (self?.id == null) return;
-    Firestore.instance.collection(UsersFirestore.prefix)
-      .document(self.id).snapshots().listen((event) async {
-      
+    FirebaseFirestore.instance
+        .collection(UsersFirestore.prefix)
+        .doc(self!.id)
+        .snapshots()
+        .listen((event) async {
       // 取得したスナップショットをユーザに設定
       var user = User.fromSnapshot(event);
       var firestore = UsersFirestore();
@@ -33,4 +34,3 @@ class SelfUserBloc {
     });
   }
 }
-

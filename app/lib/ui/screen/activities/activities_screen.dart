@@ -1,5 +1,3 @@
-
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:app/bloc/users/unread_replys_bloc.dart';
 import 'package:app/main.dart';
 import 'package:app/ui/route/route.dart';
@@ -7,33 +5,36 @@ import 'package:app/ui/screen/activities/all_conversations_screen.dart';
 import 'package:app/ui/screen/activities/messages_screen.dart';
 import 'package:app/ui/theme/app_theme_data.dart';
 import 'package:app/ui/utilities/app_background.dart';
+import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ActivitiesScreen extends StatefulWidget {
+  const ActivitiesScreen({super.key});
 
   @override
-  _ActivitiesScreen createState() => _ActivitiesScreen();
+  State<ActivitiesScreen> createState() => _ActivitiesScreen();
 }
 
 class _ActivitiesScreen extends State<ActivitiesScreen> {
-
   int _current = 0;
 
-  List<ScrollController> _controllers;
+  late List<ScrollController> _controllers;
   double topBarOpacity = 0.0;
 
-  UnreadReplysCounterBloc _bloc;
-  MessagesScreen _message;
-  AllConversationScreen _conversation;
+  late UnreadReplysCounterBloc _bloc;
+  late MessagesScreen _message;
+  late AllConversationScreen _conversation;
 
   @override
   void initState() {
     _controllers = [ScrollController(), ScrollController()];
 
-    _message = MessagesScreen(scrollController: _controllers[0],);
-    _conversation = AllConversationScreen();
+    _message = MessagesScreen(
+      scrollController: _controllers[0],
+    );
+    _conversation = const AllConversationScreen();
 
     super.initState();
   }
@@ -45,7 +46,6 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     auth.checkSignin(context);
     _bloc = Provider.of<UnreadReplysCounterBloc>(context);
 
@@ -54,7 +54,7 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        AppBackgroundPattern(),
+        const AppBackgroundPattern(),
         _main()
       ],
     );
@@ -64,28 +64,29 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                FontAwesomeIcons.globeAsia,
-                size: 24,
-                color: Theme.of(context).iconTheme.color,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              FontAwesomeIcons.globeAsia,
+              size: 24,
+              color: Theme.of(context).iconTheme.color,
+            ),
+            const SizedBox(width: 8),
+            Material(
+              color: Colors.transparent,
+              child: Text(
+                'Activities',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.merge(AppTheme.bold),
+                textAlign: TextAlign.left,
               ),
-              SizedBox(width: 8),
-              Material(
-                color: Colors.transparent,
-                child: Text(
-                  'Activities',
-                  style: Theme.of(context).textTheme.headline5.merge(AppTheme.bold),
-                  textAlign: TextAlign.left,
-                ),
-              )
-            ],
-          )
+            )
+          ],
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -101,62 +102,63 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
             _buildOffstage(0, _message),
             _buildOffstage(1, _conversation),
           ],
-        )
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed(RouteName.post);
         },
-        child: Icon(
+        backgroundColor: AppTheme.primary,
+        child: const Icon(
           FontAwesomeIcons.solidPaperPlane,
           color: Colors.white,
         ),
-        backgroundColor: AppTheme.primary,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
         opacity: 0.2,
         backgroundColor: Theme.of(context).bottomAppBarColor,
         currentIndex: _current,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         elevation: 4.0,
         fabLocation: BubbleBottomBarFabLocation.end,
         hasNotch: true,
         hasInk: true,
         iconSize: 32,
         onTap: (index) {
-          setState(() {
-            _current = index;
-          });
+          if (index != null) {
+            setState(() {
+              _current = index;
+            });
+          }
         },
         items: <BubbleBottomBarItem>[
           BubbleBottomBarItem(
-            icon: Icon(
-              FontAwesomeIcons.envelopeOpenText,
-              color: Theme.of(context).cursorColor,
-              size: 24,
-            ),
-            activeIcon: Icon(
-              FontAwesomeIcons.envelopeOpenText,
-              color: AppTheme.primary,
-              size: 24,
-            ),
-            backgroundColor: AppTheme.primary,
-            title: Text('INBOX')
-          ),
+              icon: Icon(
+                FontAwesomeIcons.envelopeOpenText,
+                color: Theme.of(context).disabledColor,
+                size: 24,
+              ),
+              activeIcon: const Icon(
+                FontAwesomeIcons.envelopeOpenText,
+                color: AppTheme.primary,
+                size: 24,
+              ),
+              backgroundColor: AppTheme.primary,
+              title: const Text('INBOX')),
           BubbleBottomBarItem(
-            icon: _replyItem(Theme.of(context).cursorColor),
+            icon: _replyItem(Theme.of(context).disabledColor),
             activeIcon: _replyItem(AppTheme.primary),
             backgroundColor: AppTheme.primary,
-            title: Text('CHATS')
+            title: const Text('CHATS'),
           ),
-        ]
+        ],
       ),
     );
   }
 
   Widget _replyItem(Color color) {
-    return Container(
+    return SizedBox(
       width: 40,
       height: 40,
       child: Stack(
@@ -166,7 +168,7 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
             child: Icon(
               FontAwesomeIcons.solidComments,
               color: color,
-              size: 24
+              size: 24,
             ),
           ),
           Positioned(
@@ -180,34 +182,36 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
                   return Container();
                 }
                 return Container(
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                   decoration: BoxDecoration(
                     color: Colors.redAccent,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     minWidth: 20,
                     minHeight: 20,
                   ),
                   child: Center(
                     child: Text(
                       (snapshot.data as int).toString(),
-                      style: Theme.of(context).textTheme.caption.merge(AppTheme.whiteStyle).merge(AppTheme.medium),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.merge(AppTheme.whiteStyle)
+                          .merge(AppTheme.medium),
                       textAlign: TextAlign.center,
-                    )
+                    ),
                   ),
                 );
-              }
-            )
+              },
+            ),
           )
-          
-        ]
-      )
+        ],
+      ),
     );
   }
 
   Widget _buildOffstage(int index, Widget page) {
-    
     return Offstage(
       offstage: index != _current,
       child: TickerMode(
@@ -216,6 +220,4 @@ class _ActivitiesScreen extends State<ActivitiesScreen> {
       ),
     );
   }
-  
-
 }
